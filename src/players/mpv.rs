@@ -15,7 +15,10 @@ impl Mpv {
 }
 
 impl Player for Mpv {
-    fn play(&self, media: crate::stream::Stream) -> Result<std::process::Child, Box<dyn std::error::Error>> {
+    fn play(
+        &self,
+        media: crate::stream::Stream,
+    ) -> Result<std::process::Child, Box<dyn std::error::Error>> {
         let mut args = self.args.clone();
 
         args.push(media.url);
@@ -38,31 +41,5 @@ impl Player for Mpv {
             .args(args)
             .spawn()
             .map_err(|e| Box::new(e) as Box<dyn std::error::Error>)
-    }
-}
-
-#[cfg(test)]
-mod test {
-    use crate::{players::Player, stream::Stream};
-    #[test]
-    fn mpv_execution_for_stream() {
-        /* Ignore in CI. */
-        let stream = Stream::new(
-            "https://www.youtube.com/watch?v=dQw4w9WgXcQ".to_string(),
-            None,
-            Some("One Piece: Episode 1".to_string()),
-            Some("--fs".to_string()),
-        );
-
-        let mpv = super::Mpv::new();
-
-        let mut child = mpv.play(stream).unwrap();
-        assert_eq!(
-            child
-                .wait()
-                .expect("Failed to spawn child process for mpv.")
-                .code(),
-            Some(0)
-        )
     }
 }
